@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  webserver:
+    container_name: nginx
+    build: ./nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ../html:/var/www/html
+      - ./logs/nginx:/var/log/nginx
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    links:
+      - php
+    command: [
+      "sh", "-c",
+      "while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g 'daemon off;'"
+    ]
+    networks:
+      default:
+        ipv4_address: 172.16.238.10
+        ipv6_address: 2001:3984:3989::10
+  php:
+    container_name: php
+    build: ./php
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - ../html:/var/www/html
+    networks:
+        default:
+            ipv4_address: 172.16.238.11
+            ipv6_address: 2001:3984:3989::11
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"
+        - subnet: "2001:3984:3989::/64"
