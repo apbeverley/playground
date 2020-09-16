@@ -1,4 +1,4 @@
-FROM php:7.4.6-fpm-alpine3.11
+FROM php:7.4.10-fpm-alpine3.12
 
 ENV \
   PECL_EXTENSIONS="apcu pcov psr redis" \
